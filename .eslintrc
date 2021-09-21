@@ -12,13 +12,17 @@
     "Atomics": "readonly",
     "SharedBufferArray": "readonly"
   },
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
     "ecmaFeatures": { "jsx": true },
     "allowImportExportEverywhere": false,
-    "codeFrame": false
+    "codeFrame": false,
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+    }
   },
   "settings": {
     "react": {
@@ -38,6 +42,7 @@
     "no-static-element-interactions": 0,
     "prefer-destructuring": 1,
     "react/display-name": 0,
-    "func-names": 0
+    "func-names": 0,
+    "react/no-unescaped-entities": 0
   }
 }
