@@ -1,19 +1,25 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "gitwars",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
+  "description": "A dynamic website for showcasing profiles of different members of the community along with a fun gitwars game",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "dscnitrourkela",
   "keywords": [
-    "gatsby"
+    "gatsby",
+    "react",
+    "git",
+    "github",
+    "styled-components",
+    "dscnitrourkela",
+    "firebase"
   ],
-  "license": "0BSD",
+  "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+    "url": "https://github.com/dscnitrourkela/project-something"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/dscnitrourkela/project-something/issues"
   },
   "scripts": {
     "build": "gatsby build",
@@ -21,7 +27,10 @@
     "start": "gatsby develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "prettier:fix": "npx prettier --write ./src",
+    "prettier:check": "npx prettier --check ./src",
+    "lint:fix": "npx eslint --fix 'src/**/*.{js,jsx,ts,tsx,json,md}'",
+    "lint:find": "npx eslint 'src/**/*.{js,jsx,ts,tsx,json,md}'"
   },
   "dependencies": {
     "gatsby": "^3.13.1",
