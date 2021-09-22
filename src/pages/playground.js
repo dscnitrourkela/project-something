@@ -11,7 +11,7 @@ const Container = styled.div`
   max-width: 100vw;
   height: auto;
   min-height: 100vh;
-  background: linear-gradient(315deg, #32393e, #1d2026);
+  background: linear-gradient(-45deg, #32393e, #1d2026);
   display: flex;
   justify-content: center;
   align-items: center;
