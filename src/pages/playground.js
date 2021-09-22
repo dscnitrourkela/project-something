@@ -2,9 +2,11 @@ import React from 'react';
 
 // Libraries
 import styled from 'styled-components';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 // Components
 import MemberGrid from '../components/MemberGrid';
+import Button from '../components/shared/Button';
 
 const Container = styled.div`
   width: 100%;
@@ -18,9 +20,14 @@ const Container = styled.div`
 `;
 
 const Playground = () => (
-  <Container>
-    <MemberGrid />
-  </Container>
+  <>
+    <div style={{ backgroundColor: '#424750' }}>
+      <Button icon={faUsers} />
+    </div>
+    <Container>
+      <MemberGrid />
+    </Container>
+  </>
 );
 
 export default Playground;
