@@ -13,8 +13,8 @@ const CardContainer = styled.div`
   border-radius: 20px;
 
   background: radial-gradient(rgba(17, 168, 253, 0.1), rgba(0, 129, 201, 0.1));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 
   margin: 15px;
   padding: 25px;
@@ -88,7 +88,7 @@ const ThirdRow = styled.div`
   margin-top: 25px;
 `;
 
-const UserShowcaseCard = () => {
+const MemberCard = () => {
   const stats = [
     {
       name: 'repos',
@@ -147,4 +147,4 @@ const UserShowcaseCard = () => {
   );
 };
 
-export default UserShowcaseCard;
+export default MemberCard;

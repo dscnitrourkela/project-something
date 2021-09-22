@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 // Components
-import UserShowcaseCard from '../components/shared/UserShowcaseCard';
+import MemberGrid from '../components/MemberGrid';
 
 const Container = styled.div`
   width: 100%;
@@ -19,7 +19,7 @@ const Container = styled.div`
 
 const Playground = () => (
   <Container>
-    <UserShowcaseCard />
+    <MemberGrid />
   </Container>
 );
 
