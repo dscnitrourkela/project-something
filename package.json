@@ -33,6 +33,10 @@
     "lint:find": "npx eslint 'src/**/*.{js,jsx,ts,tsx,json,md}'"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.15",
     "dotenv": "^10.0.0",
     "gatsby": "^3.13.1",
     "gatsby-plugin-image": "^1.13.0",
