@@ -13,7 +13,7 @@ const ButtonContainer = styled.button`
   height: 56px;
   position: relative;
 
-  transition: transform 0.3s;
+  transition: all 0.3s;
   &:hover {
     transform: scale(1.1);
   }
@@ -42,6 +42,7 @@ const Layer1 = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s;
 `;
 
 const Layer2 = styled.div`
@@ -60,6 +61,7 @@ const Layer2 = styled.div`
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
+  transition: all 0.3s;
 `;
 
 const Layer3 = styled.div`
@@ -78,6 +80,7 @@ const Layer3 = styled.div`
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
+  transition: all 0.3s;
 `;
 
 const Layer4 = styled.div`
@@ -102,8 +105,8 @@ const Layer4 = styled.div`
   }
 `;
 
-const Button = ({ icon, active }) => (
-  <ButtonContainer>
+const Button = ({ icon, active, setActivePage }) => (
+  <ButtonContainer onClick={setActivePage}>
     <Layer4 active={active} />
     <Layer3 active={active} />
     <Layer2 active={active} />
