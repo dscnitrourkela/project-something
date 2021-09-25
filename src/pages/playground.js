@@ -2,11 +2,10 @@ import React from 'react';
 
 // Libraries
 import styled from 'styled-components';
-import { faUsers, faUserCircle, faJedi } from '@fortawesome/free-solid-svg-icons';
 
 // Components
 import MemberGrid from '../components/MemberGrid';
-import Button from '../components/shared/Button';
+import MobileNavbar from '../components/marginals/MobileNavbar';
 
 const Container = styled.div`
   width: 100%;
@@ -21,11 +20,7 @@ const Container = styled.div`
 
 const Playground = () => (
   <>
-    <div style={{ backgroundColor: '#424750' }}>
-      <Button icon={faUsers} active />
-      <Button icon={faUserCircle} />
-      <Button icon={faJedi} />
-    </div>
+    <MobileNavbar />
     <Container>
       <MemberGrid />
     </Container>
