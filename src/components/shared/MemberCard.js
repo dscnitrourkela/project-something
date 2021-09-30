@@ -12,7 +12,7 @@ const CardContainer = styled.div`
   min-width: 355px;
   border-radius: 20px;
 
-  background: radial-gradient(rgba(17, 168, 253, 0.1), rgba(0, 129, 201, 0.1));
+  background: radial-gradient(rgba(159, 195, 212, 0.1), rgba(159, 195, 212, 0.1));
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 
