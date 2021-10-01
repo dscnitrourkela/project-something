@@ -71,7 +71,7 @@ const CommunityMemberGrid = () => {
     <BackgroundImageContainer>
       <GridContainer>
         {members.map(({ node: { frontmatter: member } }) => (
-          <MemberCard key={member.github} />
+          <MemberCard key={member.github} member={member} />
         ))}
       </GridContainer>
     </BackgroundImageContainer>
