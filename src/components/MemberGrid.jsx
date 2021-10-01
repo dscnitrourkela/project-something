@@ -2,6 +2,7 @@
 import React from 'react';
 
 // Libraries
+import { graphql, useStaticQuery } from 'gatsby';
 import styled from 'styled-components';
 
 // Components
@@ -45,13 +46,32 @@ const GridContainer = styled.div`
 `;
 
 const CommunityMemberGrid = () => {
-  const members = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  const {
+    members: { edges: members },
+  } = useStaticQuery(graphql`
+    query MyQuery {
+      members: allMdx(filter: { fileAbsolutePath: { regex: "/members/" } }) {
+        edges {
+          node {
+            frontmatter {
+              github
+              linkedin
+              portfolio
+              shortDescription
+              title
+              twitter
+            }
+          }
+        }
+      }
+    }
+  `);
 
   return (
     <BackgroundImageContainer>
       <GridContainer>
-        {members.map((number) => (
-          <MemberCard key={number} />
+        {members.map(({ node: { frontmatter: member } }) => (
+          <MemberCard key={member.github} />
         ))}
       </GridContainer>
     </BackgroundImageContainer>
