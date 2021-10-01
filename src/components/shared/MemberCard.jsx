@@ -91,6 +91,53 @@ const ThirdRow = styled.div`
 
 const octokit = new Octokit({ auth: process.env.auth });
 
+const getCommitCount = async (username) => {
+  const githubUser = await octokit.request(
+    `GET /users/${username}/events`,
+    {
+      username,
+      per_page: 100,
+    },
+    {
+      Authorization: `${username}:${process.env.auth}`,
+    },
+  );
+  console.log(githubUser);
+
+  const githubU = await octokit.graphql(
+    `
+    query ($login: String!) {
+      user(login: $login) {
+          name
+          contributionsCollection {
+            contributionCalendar {
+              colors
+              totalContributions
+              weeks {
+                contributionDays {
+                  color
+                  contributionCount
+                  date
+                  weekday
+                }
+                firstDay
+              }
+            }
+          }
+        }
+      }
+    `,
+    { login: 'riteshsp2000' },
+    {
+      Authorization: `${username}:${process.env.auth}`,
+    },
+  );
+  console.log(githubU);
+
+  const commits = githubUser.data;
+  return commits.filter(({ type }) => type === 'PushEvent').length;
+};
+
 const MemberCard = ({ member }) => {
   const [user, setUser] = React.useState({
     name: 'loading',
@@ -98,22 +145,7 @@ const MemberCard = ({ member }) => {
     description: 'loading',
   });
 
-  React.useEffect(() => {
-    const getUser = async () => {
-      const githubUser = await octokit.request(`GET /users/${member.github}`, {
-        username: member.github,
-      });
-      setUser({
-        name: githubUser.data.name,
-        img: githubUser.data.avatar_url,
-        description: member.shortDescription ? member.shortDescription : githubUser.data.bio,
-      });
-    };
-
-    getUser();
-  }, [member.github, member.shortDescription]);
-
-  const stats = [
+  const [stats, setStats] = React.useState([
     {
       name: 'repos',
       count: 237,
@@ -126,7 +158,56 @@ const MemberCard = ({ member }) => {
       name: 'orgs',
       count: 52,
     },
-  ];
+  ]);
+
+  React.useEffect(() => {
+    const getUser = async () => {
+      const githubUser = await octokit.request(
+        `GET /users/${member.github}`,
+        {
+          username: member.github,
+        },
+        {
+          Authorization: `${member.github}:${process.env.auth}`,
+        },
+      );
+      setUser({
+        name: githubUser.data.name,
+        img: githubUser.data.avatar_url,
+        description: member.shortDescription ? member.shortDescription : githubUser.data.bio,
+      });
+
+      setStats((current) =>
+        current.map((item) =>
+          item.name === 'repos' ? { name: 'repos', count: githubUser.data.public_repos } : item,
+        ),
+      );
+
+      const repos = await octokit.request(
+        `GET /users/${member.github}/orgs`,
+        {
+          username: member.github,
+        },
+        {
+          Authorization: `${member.github}:${process.env.auth}`,
+        },
+      );
+
+      setStats((current) =>
+        current.map((item) =>
+          item.name === 'orgs' ? { name: 'orgs', count: repos.data.length } : item,
+        ),
+      );
+
+      // Fetch Commit Details
+      const count = await getCommitCount(member.github);
+      setStats((current) =>
+        current.map((item) => (item.name === 'commits' ? { name: 'commits', count } : item)),
+      );
+    };
+
+    getUser();
+  }, [member.github, member.shortDescription]);
 
   return (
     <CardContainer>
