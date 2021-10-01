@@ -3,8 +3,9 @@ import React from 'react';
 // Libraries
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faLinkedin, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { Octokit } from '@octokit/core';
 
 const CardContainer = styled.div`
   width: 355px;
@@ -88,7 +89,30 @@ const ThirdRow = styled.div`
   margin-top: 25px;
 `;
 
-const MemberCard = () => {
+const octokit = new Octokit({ auth: process.env.auth });
+
+const MemberCard = ({ member }) => {
+  const [user, setUser] = React.useState({
+    name: 'loading',
+    img: 'https://res.cloudinary.com/dscnitrourkela/image/upload/Gitwars/xm6ww3pkeaj7kys3kvdg.png',
+    description: 'loading',
+  });
+
+  React.useEffect(() => {
+    const getUser = async () => {
+      const githubUser = await octokit.request(`GET /users/${member.github}`, {
+        username: member.github,
+      });
+      setUser({
+        name: githubUser.data.name,
+        img: githubUser.data.avatar_url,
+        description: member.shortDescription ? member.shortDescription : githubUser.data.bio,
+      });
+    };
+
+    getUser();
+  }, [member.github, member.shortDescription]);
+
   const stats = [
     {
       name: 'repos',
@@ -103,12 +127,6 @@ const MemberCard = () => {
       count: 52,
     },
   ];
-
-  const user = {
-    name: 'Ritesh Patil',
-    img: 'https://www.riteshpatil.dev/static/64df91c784959766b37dfdaece83e6b8/5f169/Ritesh.webp',
-    description: 'Developer | Designer | Tech Enthusiast | Photographer',
-  };
 
   return (
     <CardContainer>
@@ -139,9 +157,27 @@ const MemberCard = () => {
       </SecondRow>
 
       <ThirdRow>
-        <FontAwesomeIcon size='lg' icon={faTwitter} color='#9FC3D4' />
-        <FontAwesomeIcon size='lg' icon={faLinkedin} color='#9FC3D4' />
-        <FontAwesomeIcon size='lg' icon={faGlobe} color='#9FC3D4' />
+        {member.twitter && (
+          <a href={member.twitter} target='_blank' rel='noreferrer'>
+            <FontAwesomeIcon size='lg' icon={faTwitter} color='#9FC3D4' />
+          </a>
+        )}
+
+        {member.linkedin && (
+          <a href={member.linkedin} target='_blank' rel='noreferrer'>
+            <FontAwesomeIcon size='lg' icon={faLinkedin} color='#9FC3D4' />
+          </a>
+        )}
+
+        {member.portfolio && (
+          <a href={member.portfolio} target='_blank' rel='noreferrer'>
+            <FontAwesomeIcon size='lg' icon={faGlobe} color='#9FC3D4' />
+          </a>
+        )}
+
+        <a href={`https://github.com/${member.github}`} target='_blank' rel='noreferrer'>
+          <FontAwesomeIcon size='lg' icon={faGithub} color='#9FC3D4' />
+        </a>
       </ThirdRow>
     </CardContainer>
   );
