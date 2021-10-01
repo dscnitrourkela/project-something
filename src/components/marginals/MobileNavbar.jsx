@@ -23,6 +23,10 @@ const MobileNavContainer = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-around;
+
+  @media (min-width: 1150px) {
+    display: none;
+  }
 `;
 
 const MOBILE_STATE = {

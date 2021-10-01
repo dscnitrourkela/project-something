@@ -24,6 +24,9 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 1rem;
   overflow-y: hidden;
+  @media (max-width: 1150px) {
+    display: none;
+  }
 `;
 
 const GridContainer = styled.div`
@@ -58,37 +61,36 @@ const MobileViewContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (min-width: 1150px) {
+    display: none;
+  }
 `;
 
-const IndexPage = () => {
-  const mediaQuery = window.matchMedia('(min-width: 1150px)');
-  console.log(mediaQuery.matches);
+const IndexPage = () => (
+  <PageContainer>
+    <Container>
+      <GridContainer>
+        <DesktopNavbar />
+        <ImgContainer>
+          <Img
+            // eslint-disable-next-line max-len
+            src='https://res.cloudinary.com/dscnitrourkela/image/upload/Gitwars/xm6ww3pkeaj7kys3kvdg.png'
+            alt='Gitlog'
+          />
+        </ImgContainer>
 
-  return mediaQuery.matches ? (
-    <PageContainer>
-      <Container>
-        <GridContainer>
-          <DesktopNavbar />
-          <ImgContainer>
-            <Img
-              // eslint-disable-next-line max-len
-              src='https://res.cloudinary.com/dscnitrourkela/image/upload/Gitwars/xm6ww3pkeaj7kys3kvdg.png'
-              alt='Gitlog'
-            />
-          </ImgContainer>
+        <MemberGrid />
+      </GridContainer>
+    </Container>
 
-          <MemberGrid />
-        </GridContainer>
-      </Container>
-    </PageContainer>
-  ) : (
     <>
       <MobileNavbar />
       <MobileViewContainer>
         <MemberGrid />
       </MobileViewContainer>
     </>
-  );
-};
+  </PageContainer>
+);
 
 export default IndexPage;
