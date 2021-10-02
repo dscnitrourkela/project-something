@@ -7,10 +7,9 @@ import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 
 // Components
-// import MemberCard from './shared/MemberCard';
+import MemberCard from './shared/MemberCard';
 
-const octokit = new Octokit({ auth: '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' });
-console.log(process.env);
+const octokit = new Octokit({ auth: process.env.GATSBY_GITHUB_TOKEN });
 
 const BackgroundImageContainer = styled.div`
   width: 100%;
@@ -50,10 +49,10 @@ const GridContainer = styled.div`
 `;
 
 const CommunityMemberGrid = () => {
-  const [mems, setMems] = useState([]);
+  const [members, setMembers] = useState([]);
 
   const {
-    members: { edges: members },
+    members: { edges: memberList },
   } = useStaticQuery(graphql`
     query MyQuery {
       members: allMdx(filter: { fileAbsolutePath: { regex: "/members/" } }) {
@@ -76,9 +75,9 @@ const CommunityMemberGrid = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
+        // Construct a query containing all the members required details
         let query = ' ';
-
-        members.forEach(({ node: { frontmatter: m } }) => {
+        memberList.forEach(({ node: { frontmatter: m } }) => {
           query += `\n ${m.github}: user(login: "${m.github}") {
             name
             bio
@@ -89,35 +88,67 @@ const CommunityMemberGrid = () => {
             contributionsCollection {
               totalRepositoryContributions
               contributionCalendar {
-                colors
                 totalContributions
               }
             }
           }`;
         });
-
         const finalQuery = `query{ ${query} \n}`;
 
-        const trial = await octokit.graphql(finalQuery);
-        const membersArray = Object.keys(trial).map((key) => trial[key]);
-        setMems(membersArray);
+        // Use graphql users query to fetch all the required data
+        // Modify the received data as per our data structred
+        // Update the state after completing the modifciations.
+        const data = await octokit.graphql(finalQuery);
+        const membersArray = Object.keys(data).map((key, index) => {
+          const {
+            name,
+            bio,
+            avatarUrl,
+            organizations: { totalCount: orgCount },
+            contributionsCollection: {
+              totalRepositoryContributions: repoCount,
+              contributionCalendar: { totalContributions: commitCount },
+            },
+          } = data[key];
+
+          const {
+            node: {
+              frontmatter: { github, linkedin, twitter, portfolio, shortDescription },
+            },
+          } = memberList[index];
+
+          return {
+            name,
+            img: avatarUrl,
+            bio: shortDescription || bio,
+            stats: {
+              orgs: orgCount,
+              commits: commitCount,
+              repos: repoCount,
+            },
+            socials: {
+              twitter,
+              linkedin,
+              github,
+              portfolio,
+            },
+          };
+        });
+        setMembers(membersArray);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchDetails();
-  }, [members]);
-
-  console.log(mems);
+  }, [memberList]);
 
   return (
     <BackgroundImageContainer>
       <GridContainer>
-        Hello
-        {/* {members.map(({ node: { frontmatter: member } }) => (
-          <MemberCard key={member.github} member={member} />
-        ))} */}
+        {members.map((member) => (
+          <MemberCard key={member.socials.github} member={member} />
+        ))}
       </GridContainer>
     </BackgroundImageContainer>
   );

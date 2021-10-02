@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLinkedin, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { Octokit } from '@octokit/core';
 
 const CardContainer = styled.div`
   width: 355px;
@@ -89,179 +88,55 @@ const ThirdRow = styled.div`
   margin-top: 25px;
 `;
 
-const octokit = new Octokit({ auth: process.env.auth });
-
-const getCommitCount = async (username) => {
-  const githubUser = await octokit.request(
-    `GET /users/${username}/events`,
-    {
-      username,
-      per_page: 100,
-    },
-    {
-      Authorization: `${username}:${process.env.auth}`,
-    },
-  );
-  console.log(githubUser);
-
-  const githubU = await octokit.graphql(
-    `
-    query ($login: String!) {
-      user(login: $login) {
-          name
-          contributionsCollection {
-            contributionCalendar {
-              colors
-              totalContributions
-              weeks {
-                contributionDays {
-                  color
-                  contributionCount
-                  date
-                  weekday
-                }
-                firstDay
-              }
-            }
-          }
-        }
-      }
-    `,
-    { login: 'riteshsp2000' },
-    {
-      Authorization: `${username}:${process.env.auth}`,
-    },
-  );
-  console.log(githubU);
-
-  const commits = githubUser.data;
-  return commits.filter(({ type }) => type === 'PushEvent').length;
+const socialIcons = {
+  twitter: faTwitter,
+  linkedin: faLinkedin,
+  github: faGithub,
+  portfolio: faGlobe,
 };
 
-const MemberCard = ({ member }) => {
-  const [user, setUser] = React.useState({
-    name: 'loading',
-    img: 'https://res.cloudinary.com/dscnitrourkela/image/upload/Gitwars/xm6ww3pkeaj7kys3kvdg.png',
-    description: 'loading',
-  });
+const MemberCard = ({ member }) => (
+  <CardContainer>
+    <FirstRow>
+      <UserImage src={member.img} alt={member.name} />
+      <StatsContainer>
+        {Object.keys(member.stats).map((key) => (
+          <SingleStatContainer key={`${member.stats[key]}-${key}`}>
+            <BoldHeading>{member.stats[key]}</BoldHeading>
+            <NormalPara>{key}</NormalPara>
+          </SingleStatContainer>
+        ))}
+      </StatsContainer>
+    </FirstRow>
 
-  const [stats, setStats] = React.useState([
-    {
-      name: 'repos',
-      count: 237,
-    },
-    {
-      name: 'commits',
-      count: '10k',
-    },
-    {
-      name: 'orgs',
-      count: 52,
-    },
-  ]);
+    <SecondRow>
+      <BoldHeading style={{ fontSize: '16px', marginBottom: '5px' }}>{member.name}</BoldHeading>
+      <NormalPara
+        style={{
+          fontSize: '14px',
+          fontWeight: '300',
+          letterSpacing: '0.5px',
+          lineHeight: '16px',
+        }}
+      >
+        {member.bio || "I'm a big fan of open source and Github."}
+      </NormalPara>
+    </SecondRow>
 
-  React.useEffect(() => {
-    const getUser = async () => {
-      const githubUser = await octokit.request(
-        `GET /users/${member.github}`,
-        {
-          username: member.github,
-        },
-        {
-          Authorization: `${member.github}:${process.env.auth}`,
-        },
-      );
-      setUser({
-        name: githubUser.data.name,
-        img: githubUser.data.avatar_url,
-        description: member.shortDescription ? member.shortDescription : githubUser.data.bio,
-      });
-
-      setStats((current) =>
-        current.map((item) =>
-          item.name === 'repos' ? { name: 'repos', count: githubUser.data.public_repos } : item,
-        ),
-      );
-
-      const repos = await octokit.request(
-        `GET /users/${member.github}/orgs`,
-        {
-          username: member.github,
-        },
-        {
-          Authorization: `${member.github}:${process.env.auth}`,
-        },
-      );
-
-      setStats((current) =>
-        current.map((item) =>
-          item.name === 'orgs' ? { name: 'orgs', count: repos.data.length } : item,
-        ),
-      );
-
-      // Fetch Commit Details
-      const count = await getCommitCount(member.github);
-      setStats((current) =>
-        current.map((item) => (item.name === 'commits' ? { name: 'commits', count } : item)),
-      );
-    };
-
-    getUser();
-  }, [member.github, member.shortDescription]);
-
-  return (
-    <CardContainer>
-      <FirstRow>
-        <UserImage src={user.img} alt={user.name} />
-        <StatsContainer>
-          {stats.map(({ name, count }) => (
-            <SingleStatContainer key={`${name}-${count}`}>
-              <BoldHeading>{count}</BoldHeading>
-              <NormalPara>{name}</NormalPara>
-            </SingleStatContainer>
-          ))}
-        </StatsContainer>
-      </FirstRow>
-
-      <SecondRow>
-        <BoldHeading style={{ fontSize: '16px', marginBottom: '5px' }}>{user.name}</BoldHeading>
-        <NormalPara
-          style={{
-            fontSize: '14px',
-            fontWeight: '300',
-            letterSpacing: '0.5px',
-            lineHeight: '16px',
-          }}
-        >
-          {user.description}
-        </NormalPara>
-      </SecondRow>
-
-      <ThirdRow>
-        {member.twitter && (
-          <a href={member.twitter} target='_blank' rel='noreferrer'>
-            <FontAwesomeIcon size='lg' icon={faTwitter} color='#9FC3D4' />
+    <ThirdRow>
+      {Object.keys(member.socials)
+        .map((key) => ({
+          href: member.socials[key],
+          icon: socialIcons[key],
+        }))
+        .filter(({ href }) => href)
+        .map(({ href, icon }) => (
+          <a key={href} href={href} target='_blank' rel='noreferrer'>
+            <FontAwesomeIcon size='lg' icon={icon} color='#9FC3D4' />
           </a>
-        )}
-
-        {member.linkedin && (
-          <a href={member.linkedin} target='_blank' rel='noreferrer'>
-            <FontAwesomeIcon size='lg' icon={faLinkedin} color='#9FC3D4' />
-          </a>
-        )}
-
-        {member.portfolio && (
-          <a href={member.portfolio} target='_blank' rel='noreferrer'>
-            <FontAwesomeIcon size='lg' icon={faGlobe} color='#9FC3D4' />
-          </a>
-        )}
-
-        <a href={`https://github.com/${member.github}`} target='_blank' rel='noreferrer'>
-          <FontAwesomeIcon size='lg' icon={faGithub} color='#9FC3D4' />
-        </a>
-      </ThirdRow>
-    </CardContainer>
-  );
-};
+        ))}
+    </ThirdRow>
+  </CardContainer>
+);
 
 export default MemberCard;
