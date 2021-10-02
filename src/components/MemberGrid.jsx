@@ -1,12 +1,16 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Libraries
 import { graphql, useStaticQuery } from 'gatsby';
 import styled from 'styled-components';
+import { Octokit } from '@octokit/core';
 
 // Components
-import MemberCard from './shared/MemberCard';
+// import MemberCard from './shared/MemberCard';
+
+const octokit = new Octokit({ auth: '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' });
+console.log(process.env);
 
 const BackgroundImageContainer = styled.div`
   width: 100%;
@@ -46,6 +50,8 @@ const GridContainer = styled.div`
 `;
 
 const CommunityMemberGrid = () => {
+  const [mems, setMems] = useState([]);
+
   const {
     members: { edges: members },
   } = useStaticQuery(graphql`
@@ -67,12 +73,51 @@ const CommunityMemberGrid = () => {
     }
   `);
 
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        let query = ' ';
+
+        members.forEach(({ node: { frontmatter: m } }) => {
+          query += `\n ${m.github}: user(login: "${m.github}") {
+            name
+            bio
+            avatarUrl
+            organizations {
+              totalCount
+            }
+            contributionsCollection {
+              totalRepositoryContributions
+              contributionCalendar {
+                colors
+                totalContributions
+              }
+            }
+          }`;
+        });
+
+        const finalQuery = `query{ ${query} \n}`;
+
+        const trial = await octokit.graphql(finalQuery);
+        const membersArray = Object.keys(trial).map((key) => trial[key]);
+        setMems(membersArray);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchDetails();
+  }, [members]);
+
+  console.log(mems);
+
   return (
     <BackgroundImageContainer>
       <GridContainer>
-        {members.map(({ node: { frontmatter: member } }) => (
+        Hello
+        {/* {members.map(({ node: { frontmatter: member } }) => (
           <MemberCard key={member.github} member={member} />
-        ))}
+        ))} */}
       </GridContainer>
     </BackgroundImageContainer>
   );
