@@ -8,6 +8,7 @@ import { Octokit } from '@octokit/core';
 
 // Components
 import MemberCard from './shared/MemberCard';
+import Loader from './shared/Loader';
 
 const octokit = new Octokit({ auth: process.env.GATSBY_GITHUB_TOKEN });
 
@@ -50,6 +51,8 @@ const GridContainer = styled.div`
 
 const CommunityMemberGrid = () => {
   const [members, setMembers] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const {
     members: { edges: memberList },
@@ -135,8 +138,9 @@ const CommunityMemberGrid = () => {
           };
         });
         setMembers(membersArray);
-      } catch (error) {
-        console.log(error);
+        setLoading(false);
+      } catch (e) {
+        setError(true);
       }
     };
 
@@ -145,11 +149,15 @@ const CommunityMemberGrid = () => {
 
   return (
     <BackgroundImageContainer>
-      <GridContainer>
-        {members.map((member) => (
-          <MemberCard key={member.socials.github} member={member} />
-        ))}
-      </GridContainer>
+      {isLoading || error ? (
+        <Loader />
+      ) : (
+        <GridContainer>
+          {members.map((member) => (
+            <MemberCard key={member.socials.github} member={member} />
+          ))}
+        </GridContainer>
+      )}
     </BackgroundImageContainer>
   );
 };
